@@ -26,7 +26,7 @@
   <div class="loading" id="loading"><div class="loading-inner"><div class="loading-emoji">🏡</div><div class="loading-label">De Franisca Family</div></div></div>
   <div class="alert-stack" id="alerts" aria-live="polite"></div>
   <main class="wrap" id="app">
-    <header><div class="brand"><div class="brand-mark">🧺</div><div><h1 id="title">Supply Monitoring</h1><div class="subtitle">A happy little home manager</div></div></div><div class="mode" id="mode">👀 View Only</div></header>
+    <header><div class="brand"><div class="brand-mark">🧺</div><div><h1>Supply Monitoring</h1><div class="subtitle">A happy little home manager</div></div></div><div style="display:flex;align-items:center;gap:8px"><div class="mode" id="mode">🔒 Signed out</div><button class="primary" id="auth-button" type="button">Sign in with Google</button></div></header>
     <section class="intro"><div><h2>Highview Papa Monitoring! ☀️</h2><p>Keep an eye on pantry supplies and upcoming bills.</p></div><div class="intro-emoji">🌼</div></section>
     <div class="notice" id="notice" role="status"></div>
     <section class="funds-panel" id="funds-panel" aria-labelledby="funds-heading"><div class="funds-icon" aria-hidden="true">💰</div><div class="funds-copy"><p class="funds-kicker">HOUSEHOLD BUDGET</p><h2 id="funds-heading">Funds left</h2><p id="funds-message">Money available for upcoming expenses</p></div><div class="funds-total" id="funds-total">₱0.00</div><button class="add" id="edit-funds">✎ Edit</button></section>
@@ -34,13 +34,13 @@
     <section aria-labelledby="supply-heading"><div class="section-head"><div><h2 id="supply-heading">Pantry supplies 🥫</h2><p>A little check-in keeps everything stocked.</p></div><span class="count" id="supply-count">0 items</span><button class="add" id="add-supply">＋ Add supply</button></div><div class="grid" id="supplies"></div></section>
     <footer class="footer">Made with a little sunshine and lots of care ☁️</footer>
   </main>
-  <dialog id="admin-dialog"><form class="dialog-body" id="admin-form"><h2>Admin mode ✨</h2><p>Enter the household admin password.</p><input id="admin-password" type="password" inputmode="numeric" autocomplete="off" placeholder="Password" aria-label="Admin password"><div class="dialog-error" id="admin-error"></div><div class="dialog-actions"><button class="soft" type="button" data-close="admin-dialog">Cancel</button><button class="primary" type="submit">Unlock</button></div></form></dialog>
   <dialog id="supply-dialog"><form class="dialog-body" id="supply-form"><h2>Add a supply 🥕</h2><p>What should we keep track of?</p><input id="supply-name" maxlength="40" required placeholder="Supply name"><div class="dialog-error" id="supply-error"></div><div class="dialog-actions"><button class="soft" type="button" data-close="supply-dialog">Cancel</button><button class="primary" type="submit">Add supply</button></div></form></dialog>
   <dialog id="bill-dialog"><form class="dialog-body" id="bill-form"><h2>Add a bill 💌</h2><p>Save a bill and its due date.</p><input id="bill-name" maxlength="50" required placeholder="Bill name"><input id="bill-amount" type="number" min="0.01" step="0.01" required placeholder="Amount (₱)" style="margin-top:9px"><input id="bill-date" type="date" required style="margin-top:9px"><div class="dialog-error" id="bill-error"></div><div class="dialog-actions"><button class="soft" type="button" data-close="bill-dialog">Cancel</button><button class="primary" type="submit">Add bill</button></div></form></dialog>
   <dialog id="funds-dialog"><form class="dialog-body" id="funds-form"><h2>Edit funds left 💰</h2><p>Enter the current amount available, in Philippine pesos.</p><input id="funds-input" type="number" min="0" step="0.01" required placeholder="Amount (₱)"><div class="dialog-error" id="funds-error"></div><div class="dialog-actions"><button class="soft" type="button" data-close="funds-dialog">Cancel</button><button class="primary" type="submit">Save amount</button></div></form></dialog>
   <script type="module">
     import { firebaseConfig } from "./firebase-config.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
     import { getDatabase, ref, push, set, update, remove, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
     const $ = (id) => document.getElementById(id);
@@ -50,7 +50,8 @@
     const normalizeName=(name)=>String(name||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
     function supplyEmoji(name){return SUPPLY_EMOJI[normalizeName(name)]||"📦";}
     function billEmoji(name){const key=normalizeName(name);if(key.includes("internet")||key.includes("wifi")||key.includes("wi fi"))return "🌐";if(key.includes("electric"))return "⚡";if(key.includes("water"))return "💧";if(key.includes("gas"))return "⛽";if(key.includes("trash")||key.includes("garbage"))return "🗑️";if(key.includes("home owners association")||key.includes("homeowners association")||key==="hoa")return "🏘️";return "🧾";}
-    let database = null, supplies = {}, bills = {}, fundsLeft = 0, isAdmin = false, initializingSupplies = false;
+    const ALLOWED_EMAIL = "yumesekaireviews@gmail.com";
+    let database = null, auth = null, supplies = {}, bills = {}, fundsLeft = 0, isAdmin = false, initializingSupplies = false, stopDataListeners = [];
     const setNotice = (message, kind="") => { notice.textContent = message; notice.className = `notice show ${kind}`; };
     const safeText = (value) => String(value ?? "");
     const closeDialog = (id) => $(id).close();
@@ -78,8 +79,7 @@
       if(!entries.length){billList.innerHTML='<div class="empty">No bills saved yet. Enjoy the calm! 🌤️</div>';return;}
       billList.innerHTML=entries.map(([id,b])=>`<article class="bill"><div class="bill-icon">${esc(billEmoji(b.name))}</div><div class="bill-main"><div class="bill-name">${esc(b.name)}</div><div class="bill-meta">Due ${esc(b.dueDate||"date not set")}</div></div><div class="bill-amount">₱${Number(b.amount||0).toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2})}</div><span class="status-cell"><span class="status ${b.paid?"paid":""}">${billTiming(b.dueDate,b.paid)}</span></span><div class="bill-actions">${isAdmin?(b.paid?'<span class="paid-label">Paid ✓</span>':`<button class="pay" data-paid="${esc(id)}">Mark paid</button>`)+`<button class="delete" data-delete-bill="${esc(id)}">Delete</button>`:""}</div></article>`).join("");
     }
-    function setAdmin(value) { isAdmin=value; app.classList.toggle("admin",value); $("mode").textContent=value?"🛠️ Admin Mode":"👀 View Only"; $("mode").classList.toggle("admin",value); renderBills(); }
-    $("mode").addEventListener("click",()=>{if(isAdmin){setAdmin(false);setNotice("You’re back in view-only mode.","success");}});
+    function setAdmin(value) { isAdmin=value; app.classList.toggle("admin",value); $("mode").textContent=value?"✅ Signed in":"🔒 Signed out"; $("mode").classList.toggle("admin",value); $("auth-button").textContent=value?"Sign out":"Sign in with Google"; renderBills(); }
     async function write(operation) { try { await operation(); return true; } catch(error) { setNotice(`Could not save changes: ${error.message}. Check the Realtime Database URL and database rules.`,`error`); return false; } }
     $("title").addEventListener("dblclick",()=>{ if(isAdmin){setAdmin(false);return;} $("admin-password").value="";$("admin-error").textContent="";$("admin-dialog").showModal();setTimeout(()=>$("admin-password").focus(),20); });
     let lastTap=0; $("title").addEventListener("touchend",e=>{const now=Date.now();if(now-lastTap<450){e.preventDefault();$("title").dispatchEvent(new Event("dblclick"));}lastTap=now;});
