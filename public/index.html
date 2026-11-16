@@ -9,106 +9,912 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
+    /* ── Variables & Reset ─────────────────────────────────────── */
     :root{--ink:#403b52;--muted:#888397;--pink:#ff8fac;--purple:#9584ef;--cream:#fff8ec;--green:#73c991;--yellow:#f4c85f;--red:#f17c79;--line:#f0e9e3;--shadow:0 9px 24px #6b536515}
-    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 9% 4%,#ffe4ec 0,transparent 31%),radial-gradient(ellipse at 93% 30%,#e9e7ff 0,transparent 30%),var(--cream);color:var(--ink);font-family:Nunito,system-ui,sans-serif;min-height:100vh}
-    button,input{font:inherit}button{cursor:pointer;border:0;color:inherit} .wrap{width:min(1100px,100% - 32px);margin:auto;padding:28px 0 50px}
-    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}.brand{display:flex;gap:12px;align-items:center}.brand-mark{font-size:33px;filter:drop-shadow(0 4px 2px #e8bba4)}h1{font-size:clamp(24px,5vw,34px);line-height:1;margin:0;font-weight:900;letter-spacing:-.8px}.subtitle{color:var(--muted);font-weight:700;font-size:13px;margin-top:5px}.mode{border:2px solid #fff;background:#fffaf4;border-radius:99px;padding:8px 13px;font-size:12px;font-weight:900;box-shadow:var(--shadow);white-space:nowrap}.mode.admin{background:#e5f6e9;color:#398857}.intro{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(110deg,#ffe7ed,#fff3d7);border:2px solid #fff;border-radius:25px;padding:22px 24px;margin-bottom:24px;box-shadow:var(--shadow)}.intro h2{font-size:22px;margin:0 0 4px}.intro p{color:#766e7b;margin:0;font-size:14px;font-weight:700}.intro-emoji{font-size:50px;transform:rotate(-8deg)}
-    .section-head{display:flex;align-items:end;justify-content:space-between;margin:24px 2px 13px;gap:10px}.section-head h2{font-size:21px;margin:0;font-weight:900}.section-head p{font-size:12px;color:var(--muted);font-weight:800;margin:3px 0 0}.count{background:#f0ebff;padding:6px 10px;border-radius:99px;color:#7161cf;font-size:12px;font-weight:900}
-    .funds-panel{display:flex;align-items:center;gap:14px;background:linear-gradient(110deg,#e6f8e9,#e7f2ff);border:2px solid #fff;border-radius:23px;padding:16px 19px;margin:0 0 18px;box-shadow:var(--shadow)}.funds-icon{width:53px;height:53px;display:grid;place-items:center;border-radius:17px;background:#ffffffbd;font-size:30px}.funds-copy{flex:1;min-width:130px}.funds-copy h2{font-size:18px;margin:0;font-weight:900}.funds-copy p{font-size:12px;color:var(--muted);font-weight:800;margin:3px 0 0}.funds-kicker{font-size:9px!important;letter-spacing:1px;color:#638873!important;margin:0 0 2px!important}.funds-total{font-size:clamp(23px,5vw,32px);font-weight:900;white-space:nowrap;color:#438a5d}.funds-panel .add{flex-shrink:0}.funds-panel.low{background:linear-gradient(110deg,#fff2c9,#ffe7d7)}.funds-panel.low .funds-total{color:#bd762e}.funds-panel.low .funds-kicker{color:#a87334!important}.funds-panel.empty{background:linear-gradient(110deg,#ffe2e5,#ffebef)}.funds-panel.empty .funds-total{color:#c54f60}.funds-panel.empty .funds-kicker{color:#ae5764!important}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:13px}.card{background:#fff;border:2px solid #fff;border-radius:21px;padding:15px;box-shadow:var(--shadow);position:relative;animation:pop .35s both}.supply-top{display:flex;align-items:center;gap:11px}.supply-icon{width:49px;height:49px;border-radius:16px;background:#fff3e8;display:grid;place-items:center;flex:0 0 49px;font-size:29px;line-height:1}.supply-icon,.bill-icon{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}.supply-name{font-size:16px;font-weight:900;flex:1}.percent{font-size:21px;font-weight:900;color:#5c536d}.friendly{font-size:11px;color:var(--muted);font-weight:800;margin:10px 0 7px}.bar{height:10px;background:#f1edf0;border-radius:9px;overflow:hidden}.bar span{display:block;height:100%;border-radius:9px;transition:width .4s ease,background .4s}.controls{display:flex;align-items:center;justify-content:space-between;margin-top:12px}.step{width:34px;height:31px;border-radius:11px;background:#f0edff;color:#7164cd;font-weight:900;font-size:18px}.step:disabled{opacity:.35;cursor:not-allowed}.admin-controls{display:none;gap:7px}.admin .admin-controls{display:flex}.delete{background:#fff0ee;color:#d66d68;border-radius:10px;padding:7px 9px;font-weight:900;font-size:12px}.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:26px;background:#ffffffb5;border-radius:20px;font-weight:800}
-    .bills{display:grid;gap:11px}.bill{display:flex;align-items:center;gap:13px;background:#fff;border:2px solid #fff;border-radius:18px;padding:14px 16px;box-shadow:var(--shadow);animation:pop .35s both}.bill-icon{font-size:27px;width:45px;height:45px;display:grid;place-items:center;border-radius:15px;background:#fff3e5}.bill-main{min-width:0;flex:1}.bill-name{font-weight:900;font-size:15px}.bill-meta{font-size:12px;color:var(--muted);font-weight:800;margin-top:2px}.bill-amount{font-weight:900;font-size:16px;white-space:nowrap}.status{padding:6px 9px;border-radius:99px;background:#fff1d7;color:#a87819;font-size:11px;font-weight:900;white-space:nowrap}.status.paid{background:#e5f6e9;color:#398857}.bill-actions{display:flex;gap:6px}.pay{background:#e9f6ed;color:#398857;border-radius:10px;padding:8px 10px;font-size:11px;font-weight:900;white-space:nowrap}.paid-label{color:#398857;font-size:11px;font-weight:900}.add{display:none;border-radius:14px;padding:10px 14px;background:#9584ef;color:#fff;font-weight:900;box-shadow:0 5px 12px #9584ef35}.admin .add{display:block}.alert-stack{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(450px,calc(100% - 24px));z-index:5;display:grid;gap:9px}.alert{padding:13px 16px;background:#fff0dd;border:2px solid #ffdcaa;border-radius:17px;box-shadow:0 8px 22px #65512d20;font-size:13px;font-weight:900;animation:drop .4s both}.alert b{color:#a25d24}.notice{margin:18px 0;padding:12px 14px;border-radius:14px;background:#fff2db;color:#795e2d;font-size:13px;font-weight:800;display:none}.notice.show{display:block}.notice.error{background:#ffefed;color:#a34843}.notice.success{background:#e8f6ec;color:#397f51}.footer{font-size:11px;color:#a6a0ad;text-align:center;font-weight:800;padding-top:28px}
-    dialog{border:0;border-radius:24px;padding:0;width:min(380px,calc(100% - 28px));box-shadow:0 24px 70px #30234345;color:var(--ink)}dialog::backdrop{background:#342b4f66;backdrop-filter:blur(3px)}.dialog-body{padding:23px}.dialog-body h2{font-size:21px;margin:0 0 5px}.dialog-body p{font-size:13px;color:var(--muted);font-weight:700;margin:0 0 15px}.dialog-body input{width:100%;padding:12px;border:2px solid var(--line);border-radius:13px;outline:none}.dialog-body input:focus{border-color:#b4a8ff}.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}.soft{background:#f4f1f7;border-radius:12px;padding:10px 14px;font-weight:900}.primary{background:#9584ef;color:#fff;border-radius:12px;padding:10px 14px;font-weight:900}.dialog-error{height:18px;color:#d36b67;font-size:12px;font-weight:800;margin-top:5px}
-    .loading{position:fixed;inset:0;background:linear-gradient(135deg,#fff0e8,#f5ecff);display:grid;place-items:center;z-index:10;transition:opacity .4s,visibility .4s}.loading.done{opacity:0;visibility:hidden}.loading-inner{text-align:center;animation:bob 1s infinite alternate}.loading-emoji{font-size:62px}.loading-label{font-size:14px;font-weight:900;color:#7e70cf;margin-top:8px}@keyframes bob{to{transform:translateY(-8px)}}@keyframes pop{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}@keyframes drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
-    @media(max-width:560px){.wrap{width:calc(100% - 22px);padding-top:19px}.intro{padding:17px}.intro h2{font-size:18px}.intro-emoji{font-size:40px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.card{padding:12px;border-radius:18px}.supply-icon{width:40px;height:40px;font-size:23px;border-radius:13px}.supply-name{font-size:14px}.percent{font-size:18px}.section-head h2{font-size:19px}.bill{padding:11px;gap:9px;flex-wrap:wrap}.bill-amount{font-size:14px}.bill-icon{width:40px;height:40px}.status{font-size:10px}.bill-actions{margin-left:auto}.status-cell{display:flex;justify-content:flex-end}.funds-panel{gap:9px;padding:13px}.funds-icon{width:42px;height:42px;font-size:24px}.funds-copy h2{font-size:16px}.funds-copy p{font-size:10px}.funds-total{font-size:22px}.funds-panel .add{padding:9px;font-size:11px}}
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(ellipse at 9% 4%,#ffe4ec 0,transparent 31%),radial-gradient(ellipse at 93% 30%,#e9e7ff 0,transparent 30%),var(--cream);color:var(--ink);font-family:Nunito,system-ui,sans-serif;min-height:100vh}
+    button,input,select{font:inherit}button{cursor:pointer;border:0;color:inherit}
+    .wrap{width:min(1100px,100% - 32px);margin:auto;padding:28px 0 50px}
+
+    /* ── Header ────────────────────────────────────────────────── */
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand-mark{font-size:33px;filter:drop-shadow(0 4px 2px #e8bba4)}
+    h1{font-size:clamp(22px,5vw,34px);line-height:1;margin:0;font-weight:900;letter-spacing:-.8px;cursor:default;user-select:none}
+    .subtitle{color:var(--muted);font-weight:700;font-size:13px;margin-top:5px}
+    .mode{border:2px solid #fff;background:#fffaf4;border-radius:99px;padding:8px 13px;font-size:12px;font-weight:900;box-shadow:var(--shadow);white-space:nowrap}
+    .mode.admin{background:#e5f6e9;color:#398857}
+
+    /* ── Auth Button — hidden; shown only via JS when triggered ── */
+    #auth-button{display:none}
+
+    /* ── Intro / Sections ──────────────────────────────────────── */
+    .intro{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(110deg,#ffe7ed,#fff3d7);border:2px solid #fff;border-radius:25px;padding:22px 24px;margin-bottom:24px;box-shadow:var(--shadow)}
+    .intro h2{font-size:22px;margin:0 0 4px}.intro p{color:#766e7b;margin:0;font-size:14px;font-weight:700}.intro-emoji{font-size:50px;transform:rotate(-8deg)}
+    .section-head{display:flex;align-items:center;justify-content:space-between;margin:28px 2px 13px;gap:10px;flex-wrap:wrap}
+    .section-head h2{font-size:21px;margin:0;font-weight:900}
+    .section-head p{font-size:12px;color:var(--muted);font-weight:800;margin:3px 0 0}
+    .count{background:#f0ebff;padding:6px 10px;border-radius:99px;color:#7161cf;font-size:12px;font-weight:900}
+    .section-right{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+
+    /* ── Funds Panel ───────────────────────────────────────────── */
+    .funds-panel{display:flex;align-items:center;gap:14px;background:linear-gradient(110deg,#e6f8e9,#e7f2ff);border:2px solid #fff;border-radius:23px;padding:16px 19px;margin:0 0 18px;box-shadow:var(--shadow)}
+    .funds-icon{width:53px;height:53px;display:grid;place-items:center;border-radius:17px;background:#ffffffbd;font-size:30px}
+    .funds-copy{flex:1;min-width:130px}.funds-copy h2{font-size:18px;margin:0;font-weight:900}.funds-copy p{font-size:12px;color:var(--muted);font-weight:800;margin:3px 0 0}
+    .funds-kicker{font-size:9px!important;letter-spacing:1px;color:#638873!important;margin:0 0 2px!important}
+    .funds-total{font-size:clamp(23px,5vw,32px);font-weight:900;white-space:nowrap;color:#438a5d}
+    .funds-panel .add{flex-shrink:0}
+    .funds-panel.low{background:linear-gradient(110deg,#fff2c9,#ffe7d7)}.funds-panel.low .funds-total{color:#bd762e}.funds-panel.low .funds-kicker{color:#a87334!important}
+    .funds-panel.empty{background:linear-gradient(110deg,#ffe2e5,#ffebef)}.funds-panel.empty .funds-total{color:#c54f60}.funds-panel.empty .funds-kicker{color:#ae5764!important}
+
+    /* ── Supply Cards ──────────────────────────────────────────── */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:13px}
+    .card{background:#fff;border:2px solid #fff;border-radius:21px;padding:15px;box-shadow:var(--shadow);position:relative;animation:pop .35s both}
+    .supply-top{display:flex;align-items:center;gap:11px}
+    .supply-icon{width:49px;height:49px;border-radius:16px;background:#fff3e8;display:grid;place-items:center;flex:0 0 49px;font-size:29px;line-height:1}
+    .supply-icon,.bill-icon{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+    .supply-name{font-size:16px;font-weight:900;flex:1}.percent{font-size:21px;font-weight:900;color:#5c536d}
+    .friendly{font-size:11px;color:var(--muted);font-weight:800;margin:10px 0 7px}
+    .bar{height:10px;background:#f1edf0;border-radius:9px;overflow:hidden}.bar span{display:block;height:100%;border-radius:9px;transition:width .4s ease,background .4s}
+    .controls{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+    .step{width:34px;height:31px;border-radius:11px;background:#f0edff;color:#7164cd;font-weight:900;font-size:18px}.step:disabled{opacity:.35;cursor:not-allowed}
+    .admin-controls{display:none;gap:7px}.admin .admin-controls{display:flex}
+    .delete{background:#fff0ee;color:#d66d68;border-radius:10px;padding:7px 9px;font-weight:900;font-size:12px}
+    .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:26px;background:#ffffffb5;border-radius:20px;font-weight:800}
+
+    /* ── Bills ─────────────────────────────────────────────────── */
+    .bills{display:grid;gap:11px}
+    .bill{display:flex;align-items:center;gap:13px;background:#fff;border:2px solid #fff;border-radius:18px;padding:14px 16px;box-shadow:var(--shadow);animation:pop .35s both}
+    .bill-icon{font-size:27px;width:45px;height:45px;display:grid;place-items:center;border-radius:15px;background:#fff3e5}
+    .bill-main{min-width:0;flex:1}.bill-name{font-weight:900;font-size:15px}.bill-meta{font-size:12px;color:var(--muted);font-weight:800;margin-top:2px}
+    .bill-amount{font-weight:900;font-size:16px;white-space:nowrap}
+    .status{padding:6px 9px;border-radius:99px;background:#fff1d7;color:#a87819;font-size:11px;font-weight:900;white-space:nowrap}.status.paid{background:#e5f6e9;color:#398857}
+    .bill-actions{display:flex;gap:6px}
+    .pay{background:#e9f6ed;color:#398857;border-radius:10px;padding:8px 10px;font-size:11px;font-weight:900;white-space:nowrap}
+    .paid-label{color:#398857;font-size:11px;font-weight:900}
+    .add{display:none;border-radius:14px;padding:10px 14px;background:#9584ef;color:#fff;font-weight:900;box-shadow:0 5px 12px #9584ef35}
+    .admin .add{display:inline-block}
+
+    /* ── Alerts / Notice ───────────────────────────────────────── */
+    .alert-stack{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(450px,calc(100% - 24px));z-index:50;display:grid;gap:9px}
+    .alert{padding:13px 16px;background:#fff0dd;border:2px solid #ffdcaa;border-radius:17px;box-shadow:0 8px 22px #65512d20;font-size:13px;font-weight:900;animation:drop .4s both}.alert b{color:#a25d24}
+    .notice{margin:18px 0;padding:12px 14px;border-radius:14px;background:#fff2db;color:#795e2d;font-size:13px;font-weight:800;display:none}.notice.show{display:block}
+    .notice.error{background:#ffefed;color:#a34843}.notice.success{background:#e8f6ec;color:#397f51}
+    .footer{font-size:11px;color:#a6a0ad;text-align:center;font-weight:800;padding-top:28px}
+
+    /* ── Dialogs ───────────────────────────────────────────────── */
+    dialog{border:0;border-radius:24px;padding:0;width:min(400px,calc(100% - 28px));box-shadow:0 24px 70px #30234345;color:var(--ink)}
+    dialog::backdrop{background:#342b4f66;backdrop-filter:blur(3px)}
+    .dialog-body{padding:23px}.dialog-body h2{font-size:21px;margin:0 0 5px}
+    .dialog-body p{font-size:13px;color:var(--muted);font-weight:700;margin:0 0 15px}
+    .dialog-body input,.dialog-body select{width:100%;padding:12px;border:2px solid var(--line);border-radius:13px;outline:none;background:#fff}
+    .dialog-body input:focus,.dialog-body select:focus{border-color:#b4a8ff}
+    .dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}
+    .soft{background:#f4f1f7;border-radius:12px;padding:10px 14px;font-weight:900}
+    .primary{background:#9584ef;color:#fff;border-radius:12px;padding:10px 14px;font-weight:900}
+    .dialog-error{min-height:18px;color:#d36b67;font-size:12px;font-weight:800;margin-top:6px}
+    #view-report-dialog{width:min(680px,calc(100% - 28px))}
+    #view-report-dialog .dialog-body{max-height:85vh;overflow-y:auto;padding:20px}
+
+    /* ── Admin-only sections ───────────────────────────────────── */
+    .admin-only{display:none}.admin .admin-only{display:block}
+
+    /* ── Date picker (shown to everyone in expenses) ────────────── */
+    .date-pick{border:2px solid var(--line);border-radius:11px;padding:8px 11px;font-size:13px;font-weight:800;outline:none;color:var(--ink);background:#fff;cursor:pointer}
+    .date-pick:focus{border-color:#b4a8ff}
+
+    /* ── Expense Table ─────────────────────────────────────────── */
+    .exp-wrap{background:#fff;border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+    .exp-table{width:100%;border-collapse:collapse;font-size:14px}
+    .exp-table th{background:#f7f4ff;color:#7161cf;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;padding:11px 14px;text-align:left}
+    .exp-table th.r,.exp-table td.r{text-align:right}
+    .exp-table td{padding:11px 14px;border-top:1px solid #f5f1f0;font-weight:700;vertical-align:middle}
+    .exp-table .date-row td{background:#fffbf0;color:var(--muted);font-size:12px;font-weight:900;letter-spacing:.3px;padding:8px 14px;border-top:2px solid var(--line)}
+    .exp-table .sub-row td{background:#f7f4ff;color:#7161cf;font-weight:900}
+    .exp-table .grand-row td{background:linear-gradient(110deg,#e6f8e9,#e7f2ff);font-weight:900;font-size:15px;color:#438a5d;border-top:2px solid #c3e6cb}
+    .exp-del{background:#fff0ee;color:#d66d68;border-radius:8px;padding:4px 9px;font-size:11px;font-weight:900;display:none;border:0;cursor:pointer;white-space:nowrap}
+    .admin .exp-del{display:inline-block}
+    .exp-empty{text-align:center;color:var(--muted);padding:28px;font-weight:800;font-size:14px}
+
+    /* ── Report Controls ───────────────────────────────────────── */
+    .report-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border-radius:18px;padding:16px 18px;box-shadow:var(--shadow);margin-bottom:16px}
+    .report-controls label{font-size:12px;font-weight:900;color:var(--muted);display:flex;align-items:center;gap:7px}
+    .report-controls input[type=date]{border:2px solid var(--line);border-radius:10px;padding:8px 11px;font-size:13px;outline:none;color:var(--ink);background:#fff}
+    .report-controls input[type=date]:focus{border-color:#b4a8ff}
+    .rng-sep{font-weight:900;color:var(--muted);font-size:18px}
+    .report-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .btn-save{background:#e6f8e9;color:#2d7a4f;border-radius:12px;padding:10px 16px;font-weight:900;font-size:13px;border:2px solid #b8e8c8}
+    .btn-save:hover{background:#d4f2de}
+    .btn-export{background:linear-gradient(110deg,#fff0f8,#f0f0ff);color:#7161cf;border-radius:12px;padding:10px 16px;font-weight:900;font-size:13px;border:2px solid #e0daf9}
+    .btn-export:hover{background:linear-gradient(110deg,#ffe4f3,#e8e4ff)}
+    .btn-del-report{background:#fff0ee;color:#d66d68;border-radius:12px;padding:10px 16px;font-weight:900;font-size:13px;border:0}
+
+    /* ── Saved Report Cards ────────────────────────────────────── */
+    .saved-grid{display:grid;gap:10px}
+    .sr-card{display:flex;align-items:center;gap:13px;background:#fff;border:2px solid #fff;border-radius:18px;padding:14px 16px;box-shadow:var(--shadow);cursor:pointer;transition:border-color .2s}
+    .sr-card:hover{border-color:#c3b8ff}
+    .sr-icon{font-size:26px}
+    .sr-info{flex:1;min-width:0}.sr-title{font-weight:900;font-size:14px}.sr-meta{font-size:11px;color:var(--muted);font-weight:800;margin-top:2px}
+    .sr-total{font-weight:900;color:#438a5d;font-size:15px;white-space:nowrap}
+
+    /* ── Export stage (off-screen, for html2canvas) ────────────── */
+    #export-stage{position:fixed;left:-9999px;top:0;width:720px;background:#fff;font-family:Nunito,system-ui,sans-serif;visibility:hidden}
+
+    /* ── Loading ────────────────────────────────────────────────── */
+    .loading{position:fixed;inset:0;background:linear-gradient(135deg,#fff0e8,#f5ecff);display:grid;place-items:center;z-index:100;transition:opacity .4s,visibility .4s}
+    .loading.done{opacity:0;visibility:hidden}
+    .loading-inner{text-align:center;animation:bob 1s infinite alternate}
+    .loading-emoji{font-size:62px}.loading-label{font-size:14px;font-weight:900;color:#7e70cf;margin-top:8px}
+    @keyframes bob{to{transform:translateY(-8px)}}
+    @keyframes pop{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+    @keyframes drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+
+    /* ── Mobile ─────────────────────────────────────────────────── */
+    @media(max-width:580px){
+      .wrap{width:calc(100% - 22px);padding-top:19px}
+      .intro{padding:17px}.intro h2{font-size:18px}.intro-emoji{font-size:40px}
+      .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+      .card{padding:12px;border-radius:18px}.supply-icon{width:40px;height:40px;font-size:23px;border-radius:13px}
+      .supply-name{font-size:14px}.percent{font-size:18px}.section-head h2{font-size:19px}
+      .bill{padding:11px;gap:9px;flex-wrap:wrap}.bill-amount{font-size:14px}.bill-icon{width:40px;height:40px}
+      .status{font-size:10px}.bill-actions{margin-left:auto}.status-cell{display:flex;justify-content:flex-end}
+      .funds-panel{gap:9px;padding:13px}.funds-icon{width:42px;height:42px;font-size:24px}
+      .funds-copy h2{font-size:16px}.funds-copy p{font-size:10px}.funds-total{font-size:22px}.funds-panel .add{padding:9px;font-size:11px}
+      .exp-table th,.exp-table td{padding:9px 10px;font-size:13px}
+      .report-controls{gap:8px}
+      .dialog-body{padding:17px}
+      .section-right{gap:7px}
+      .date-pick{font-size:12px;padding:7px 9px}
+    }
   </style>
 </head>
 <body>
-  <div class="loading" id="loading"><div class="loading-inner"><div class="loading-emoji">🏡</div><div class="loading-label">De Franisca Family</div></div></div>
-  <div class="alert-stack" id="alerts" aria-live="polite"></div>
-  <main class="wrap" id="app">
-    <header><div class="brand"><div class="brand-mark">🧺</div><div><h1>Supply Monitoring</h1><div class="subtitle">A happy little home manager</div></div></div><div style="display:flex;align-items:center;gap:8px"><div class="mode" id="mode">🔒 Signed out</div><button class="primary" id="auth-button" type="button">Sign in with Google</button></div></header>
-    <section class="intro"><div><h2>Highview Papa Monitoring! ☀️</h2><p>Keep an eye on pantry supplies and upcoming bills.</p></div><div class="intro-emoji">🌼</div></section>
-    <div class="notice" id="notice" role="status"></div>
-    <section class="funds-panel" id="funds-panel" aria-labelledby="funds-heading"><div class="funds-icon" aria-hidden="true">💰</div><div class="funds-copy"><p class="funds-kicker">HOUSEHOLD BUDGET</p><h2 id="funds-heading">Funds left</h2><p id="funds-message">Money available for upcoming expenses</p></div><div class="funds-total" id="funds-total">₱0.00</div><button class="add" id="edit-funds">✎ Edit</button></section>
-    <section aria-labelledby="bills-heading"><div class="section-head"><div><h2 id="bills-heading">Household bills 🧾</h2><p>Due dates at a glance, no surprises!</p></div><button class="add" id="add-bill">＋ Add bill</button></div><div class="bills" id="bills"></div></section>
-    <section aria-labelledby="supply-heading"><div class="section-head"><div><h2 id="supply-heading">Pantry supplies 🥫</h2><p>A little check-in keeps everything stocked.</p></div><span class="count" id="supply-count">0 items</span><button class="add" id="add-supply">＋ Add supply</button></div><div class="grid" id="supplies"></div></section>
-    <footer class="footer">Made with a little sunshine and lots of care ☁️</footer>
-  </main>
-  <dialog id="supply-dialog"><form class="dialog-body" id="supply-form"><h2>Add a supply 🥕</h2><p>What should we keep track of?</p><input id="supply-name" maxlength="40" required placeholder="Supply name"><div class="dialog-error" id="supply-error"></div><div class="dialog-actions"><button class="soft" type="button" data-close="supply-dialog">Cancel</button><button class="primary" type="submit">Add supply</button></div></form></dialog>
-  <dialog id="bill-dialog"><form class="dialog-body" id="bill-form"><h2>Add a bill 💌</h2><p>Save a bill and its due date.</p><input id="bill-name" maxlength="50" required placeholder="Bill name"><input id="bill-amount" type="number" min="0.01" step="0.01" required placeholder="Amount (₱)" style="margin-top:9px"><input id="bill-date" type="date" required style="margin-top:9px"><div class="dialog-error" id="bill-error"></div><div class="dialog-actions"><button class="soft" type="button" data-close="bill-dialog">Cancel</button><button class="primary" type="submit">Add bill</button></div></form></dialog>
-  <dialog id="funds-dialog"><form class="dialog-body" id="funds-form"><h2>Edit funds left 💰</h2><p>Enter the current amount available, in Philippine pesos.</p><input id="funds-input" type="number" min="0" step="0.01" required placeholder="Amount (₱)"><div class="dialog-error" id="funds-error"></div><div class="dialog-actions"><button class="soft" type="button" data-close="funds-dialog">Cancel</button><button class="primary" type="submit">Save amount</button></div></form></dialog>
-  <script type="module">
-    import { firebaseConfig } from "./firebase-config.js";
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-    import { getDatabase, ref, push, set, update, remove, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-    const $ = (id) => document.getElementById(id);
-    const app = $("app"), supplyList = $("supplies"), billList = $("bills"), notice = $("notice");
-    const defaults = [["Gas","🔥"],["Sugar","🍚"],["Salt","🧂"],["Chicken","🍗"],["Fish","🐟"],["Coffee","☕"],["Onions","🧅"],["Garlic","🧄"],["Cooking Oil","🫒"],["Water","💧"],["Soap","🧼"],["Detergent Powder","🫧"]];
-    const SUPPLY_EMOJI={gas:"🔥",sugar:"🍚",salt:"🧂",chicken:"🍗",fish:"🐟",coffee:"☕",onions:"🧅",garlic:"🧄","cooking oil":"🫒",water:"💧",soap:"🧼","dishwashing liquid":"🧴",bleach:"🧪","detergent powder":"🫧",toothpaste:"🪥","soy sauce":"🫙",soysauce:"🫙",vinegar:"🧴",pepper:"🫙",paprika:"🌶️",msg:"🧂",potato:"🥔",cabbage:"🥬",carrot:"🥕","bok choi":"🥬","bok choy":"🥬","water spinach":"🥬","sweet potato leaves":"🌿",rice:"🍚",ginger:"🫚",bread:"🍞","paper towel":"🧻","paper towels":"🧻",biscuits:"🍪",mouthwash:"🧴","dental adhesive":"🦷",alcohol:"🧴",medicines:"💊",medicine:"💊",pork:"🥩",flour:"🌾",barley:"🌾","fabric conditioner":"🧴","bitter melon":"🥒","bitter mellon":"🥒",pumpkin:"🎃",pumkin:"🎃","green bean":"🫘","green beans":"🫘","hotcake mix":"🥞",eggs:"🥚",egg:"🥚",cheese:"🧀","sandwich spread":"🥪","bell pepper":"🫑","bell peppers":"🫑"};
-    const normalizeName=(name)=>String(name||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
-    function supplyEmoji(name){return SUPPLY_EMOJI[normalizeName(name)]||"📦";}
-    function billEmoji(name){const key=normalizeName(name);if(key.includes("internet")||key.includes("wifi")||key.includes("wi fi"))return "🌐";if(key.includes("electric"))return "⚡";if(key.includes("water"))return "💧";if(key.includes("gas"))return "⛽";if(key.includes("trash")||key.includes("garbage"))return "🗑️";if(key.includes("home owners association")||key.includes("homeowners association")||key==="hoa")return "🏘️";return "🧾";}
-    const ALLOWED_EMAIL = "yumesekaireviews@gmail.com";
-    let database = null, auth = null, supplies = {}, bills = {}, fundsLeft = 0, isAdmin = false, initializingSupplies = false, stopDataListeners = [];
-    const setNotice = (message, kind="") => { notice.textContent = message; notice.className = `notice show ${kind}`; };
-    const safeText = (value) => String(value ?? "");
-    const closeDialog = (id) => $(id).close();
-    const esc = (value) => safeText(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-    function showAlerts(data) {
-      const now = new Date(); now.setHours(0,0,0,0);
-      const qualifying = Object.values(data || {}).filter(b => !b.paid && b.dueDate).map(b => ({...b, days: Math.round((new Date(`${b.dueDate}T00:00:00`) - now) / 86400000)})).filter(b => b.days <= 3);
-      $("alerts").replaceChildren(...qualifying.map(b => { const el = document.createElement("div"); el.className="alert"; el.innerHTML=`🔔 <b>Incoming Bills!</b> ${esc(b.name)} bill cost ₱${Number(b.amount || 0).toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2})}`; return el; }));
+<div class="loading" id="loading">
+  <div class="loading-inner">
+    <div class="loading-emoji">🏡</div>
+    <div class="loading-label">De Franisca Family</div>
+  </div>
+</div>
+
+<div class="alert-stack" id="alerts" aria-live="polite"></div>
+
+<main class="wrap" id="app">
+
+  <!-- ── Header ─────────────────────────────────────────────────── -->
+  <header>
+    <div class="brand">
+      <div class="brand-mark">🧺</div>
+      <div>
+        <!-- Double-click / double-tap to trigger admin sign-in -->
+        <h1 id="title">Supply Monitoring</h1>
+        <div class="subtitle">A happy little home manager</div>
+      </div>
+    </div>
+    <!-- Mode badge only; sign-in button is hidden and triggered by title -->
+    <div class="mode" id="mode" style="display:none"></div>
+  </header>
+
+  <!-- Hidden auth button — triggered programmatically -->
+  <button id="auth-button" type="button" aria-label="Sign in"></button>
+
+  <section class="intro">
+    <div><h2>Highview Papa Monitoring! ☀️</h2><p>Keep an eye on pantry supplies, bills, and daily expenses.</p></div>
+    <div class="intro-emoji">🌼</div>
+  </section>
+
+  <div class="notice" id="notice" role="status"></div>
+
+  <!-- ── Funds ───────────────────────────────────────────────────── -->
+  <section class="funds-panel" id="funds-panel" aria-labelledby="funds-heading">
+    <div class="funds-icon" aria-hidden="true">💰</div>
+    <div class="funds-copy">
+      <p class="funds-kicker">HOUSEHOLD BUDGET</p>
+      <h2 id="funds-heading">Funds left</h2>
+      <p id="funds-message">Money available for upcoming expenses</p>
+    </div>
+    <div class="funds-total" id="funds-total">₱0.00</div>
+    <button class="add" id="edit-funds">✎ Edit</button>
+  </section>
+
+  <!-- ── Bills ──────────────────────────────────────────────────── -->
+  <section aria-labelledby="bills-heading">
+    <div class="section-head">
+      <div><h2 id="bills-heading">Household bills 🧾</h2><p>Due dates at a glance, no surprises!</p></div>
+      <button class="add" id="add-bill">＋ Add bill</button>
+    </div>
+    <div class="bills" id="bills"></div>
+  </section>
+
+  <!-- ── Pantry Supplies ────────────────────────────────────────── -->
+  <section aria-labelledby="supply-heading">
+    <div class="section-head">
+      <div><h2 id="supply-heading">Pantry supplies 🥫</h2><p>A little check-in keeps everything stocked.</p></div>
+      <div class="section-right">
+        <span class="count" id="supply-count">0 items</span>
+        <button class="add" id="add-supply">＋ Add supply</button>
+      </div>
+    </div>
+    <div class="grid" id="supplies"></div>
+  </section>
+
+  <!-- ── Daily Expenses — everyone can view, admin can edit ─────── -->
+  <section aria-labelledby="expenses-heading">
+    <div class="section-head">
+      <div>
+        <h2 id="expenses-heading">Daily Expenses 💸</h2>
+        <p id="exp-date-label">Loading…</p>
+      </div>
+      <div class="section-right">
+        <button class="soft" id="exp-prev" title="Previous day">◀</button>
+        <!-- Date picker visible to ALL users for browsing -->
+        <input type="date" id="exp-date-pick" class="date-pick" aria-label="Select date">
+        <button class="soft" id="exp-next" title="Next day">▶</button>
+        <!-- Add button only visible to admin -->
+        <button class="add" id="add-expense">＋ Add</button>
+      </div>
+    </div>
+    <div id="expense-list"><div class="exp-empty">Loading…</div></div>
+  </section>
+
+  <!-- ── Expense Report — ADMIN ONLY ───────────────────────────── -->
+  <section class="admin-only" aria-labelledby="report-heading">
+    <div class="section-head">
+      <div>
+        <h2 id="report-heading">Expense Report 📊</h2>
+        <p>Select a date range to generate a full report</p>
+      </div>
+    </div>
+    <div class="report-controls">
+      <label>From <input type="date" id="report-from"></label>
+      <span class="rng-sep">—</span>
+      <label>To <input type="date" id="report-to"></label>
+      <button class="primary" id="btn-generate" type="button">Generate Report</button>
+    </div>
+    <div id="report-output"></div>
+    <div class="report-actions" id="report-actions" style="display:none">
+      <button class="btn-save" id="btn-save-report" type="button">💾 Save Report</button>
+      <button class="btn-export" id="btn-export-jpg" type="button">📸 Export JPG</button>
+    </div>
+  </section>
+
+  <!-- ── Saved Reports — ADMIN ONLY ────────────────────────────── -->
+  <section class="admin-only" aria-labelledby="saved-heading">
+    <div class="section-head">
+      <div>
+        <h2 id="saved-heading">Saved Reports 📁</h2>
+        <p>Tap a report to view or export it</p>
+      </div>
+    </div>
+    <div class="saved-grid" id="saved-reports"></div>
+  </section>
+
+  <footer class="footer">Made with a little sunshine and lots of care ☁️</footer>
+</main>
+
+<!-- ── Dialogs ────────────────────────────────────────────────── -->
+<dialog id="supply-dialog">
+  <form class="dialog-body" id="supply-form">
+    <h2>Add a supply 🥕</h2><p>What should we keep track of?</p>
+    <input id="supply-name" maxlength="40" required placeholder="Supply name">
+    <div class="dialog-error" id="supply-error"></div>
+    <div class="dialog-actions">
+      <button class="soft" type="button" data-close="supply-dialog">Cancel</button>
+      <button class="primary" type="submit">Add supply</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="bill-dialog">
+  <form class="dialog-body" id="bill-form">
+    <h2>Add a bill 💌</h2><p>Save a bill and its due date.</p>
+    <input id="bill-name" maxlength="50" required placeholder="Bill name">
+    <input id="bill-amount" type="number" min="0.01" step="0.01" required placeholder="Amount (₱)" style="margin-top:9px">
+    <input id="bill-date" type="date" required style="margin-top:9px">
+    <div class="dialog-error" id="bill-error"></div>
+    <div class="dialog-actions">
+      <button class="soft" type="button" data-close="bill-dialog">Cancel</button>
+      <button class="primary" type="submit">Add bill</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="funds-dialog">
+  <form class="dialog-body" id="funds-form">
+    <h2>Edit funds left 💰</h2><p>Enter the current amount available, in Philippine pesos.</p>
+    <input id="funds-input" type="number" min="0" step="0.01" required placeholder="Amount (₱)">
+    <div class="dialog-error" id="funds-error"></div>
+    <div class="dialog-actions">
+      <button class="soft" type="button" data-close="funds-dialog">Cancel</button>
+      <button class="primary" type="submit">Save amount</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Add / Edit Expense Dialog -->
+<dialog id="expense-dialog">
+  <form class="dialog-body" id="expense-form">
+    <h2>Add Expense 💸</h2>
+    <p>Log an expense item for any day.</p>
+    <input id="exp-dlg-date" type="date" required>
+    <input id="exp-name" maxlength="60" required placeholder="Item name (e.g. Rice, Chicken)" style="margin-top:9px">
+    <div style="display:flex;gap:9px;margin-top:9px">
+      <input id="exp-qty"   type="number" min="0.01" step="0.01" required placeholder="Qty" style="flex:1">
+      <input id="exp-price" type="number" min="0.01" step="0.01" required placeholder="Price / unit (₱)" style="flex:2">
+    </div>
+    <div class="dialog-error" id="expense-error"></div>
+    <div class="dialog-actions">
+      <button class="soft" type="button" data-close="expense-dialog">Cancel</button>
+      <button class="primary" type="submit">Add Expense</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- View Saved Report Dialog -->
+<dialog id="view-report-dialog">
+  <div class="dialog-body">
+    <h2 id="view-report-title" style="margin-bottom:14px">Saved Report 📋</h2>
+    <div id="view-report-content"></div>
+    <div class="dialog-actions" style="margin-top:16px;flex-wrap:wrap">
+      <button class="btn-del-report" id="btn-delete-report" type="button">🗑 Delete</button>
+      <button class="soft" type="button" data-close="view-report-dialog">Close</button>
+      <button class="btn-export" id="btn-view-export" type="button">📸 Export JPG</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Hidden export stage for html2canvas -->
+<div id="export-stage"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
+
+<script type="module">
+  import { firebaseConfig } from "./firebase-config.js";
+  import { initializeApp }  from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+  import { getDatabase, ref, push, set, update, remove, onValue, runTransaction, query, orderByKey, startAt, endAt, get }
+    from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+
+  /* ══════════════════════════════════════════════════════════════
+     HELPERS
+  ══════════════════════════════════════════════════════════════ */
+  const $ = id => document.getElementById(id);
+  const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":'&#39;'}[c]));
+  const peso = n => `₱${Number(n||0).toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+
+  const now = new Date();
+  const TODAY = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+
+  function fmtDate(dateStr){
+    return new Date(dateStr+"T00:00:00").toLocaleDateString("en-PH",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+  }
+  function fmtShort(dateStr){
+    return new Date(dateStr+"T00:00:00").toLocaleDateString("en-PH",{month:"short",day:"numeric",year:"numeric"});
+  }
+  function isToday(dateStr){ return dateStr === TODAY; }
+
+  /* ══════════════════════════════════════════════════════════════
+     CONFIG / STATE
+  ══════════════════════════════════════════════════════════════ */
+  const ADMIN_EMAIL = "yumesekaireviews@gmail.com";
+
+  let database = null, auth = null;
+  let supplies = {}, bills = {}, fundsLeft = 0;
+  let isAdmin = false, initializingSupplies = false;
+  let selectedDate      = TODAY;   // currently viewed expense date
+  let currentExpenses   = {};      // expenses for selectedDate
+  let expUnsubscribe    = null;    // detach old listener when date changes
+  let savedReports      = {};
+  let currentReport     = null;
+  let viewingId         = null;
+
+  const notice     = $("notice");
+  const app        = $("app");
+  const supplyList = $("supplies");
+  const billList   = $("bills");
+  const expList    = $("expense-list");
+  const savedList  = $("saved-reports");
+
+  const setNotice   = (msg, kind="") => { notice.textContent = msg; notice.className = `notice show ${kind}`; };
+  const closeDialog = id => $(id).close();
+
+  /* ══════════════════════════════════════════════════════════════
+     EMOJI MAPS
+  ══════════════════════════════════════════════════════════════ */
+  const defaults = [["Gas","🔥"],["Sugar","🍚"],["Salt","🧂"],["Chicken","🍗"],["Fish","🐟"],["Coffee","☕"],["Onions","🧅"],["Garlic","🧄"],["Cooking Oil","🫒"],["Water","💧"],["Soap","🧼"],["Detergent Powder","🫧"]];
+  const SUPPLY_EMOJI={gas:"🔥",sugar:"🍚",salt:"🧂",chicken:"🍗",fish:"🐟",coffee:"☕",onions:"🧅",garlic:"🧄","cooking oil":"🫒",water:"💧",soap:"🧼","dishwashing liquid":"🧴",bleach:"🧪","detergent powder":"🫧",toothpaste:"🪥","soy sauce":"🫙",soysauce:"🫙",vinegar:"🧴",pepper:"🫙",paprika:"🌶️",msg:"🧂",potato:"🥔",cabbage:"🥬",carrot:"🥕","bok choi":"🥬","bok choy":"🥬","water spinach":"🥬","sweet potato leaves":"🌿",rice:"🍚",ginger:"🫚",bread:"🍞","paper towel":"🧻","paper towels":"🧻",biscuits:"🍪",mouthwash:"🧴","dental adhesive":"🦷",alcohol:"🧴",medicines:"💊",medicine:"💊",pork:"🥩",flour:"🌾",barley:"🌾","fabric conditioner":"🧴","bitter melon":"🥒","bitter mellon":"🥒",pumpkin:"🎃",pumkin:"🎃","green bean":"🫘","green beans":"🫘","hotcake mix":"🥞",eggs:"🥚",egg:"🥚",cheese:"🧀","sandwich spread":"🥪","bell pepper":"🫑","bell peppers":"🫑"};
+  const normalizeName = name => String(name||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+  function supplyEmoji(name){return SUPPLY_EMOJI[normalizeName(name)]||"📦";}
+  function billEmoji(name){const k=normalizeName(name);if(k.includes("internet")||k.includes("wifi")||k.includes("wi fi"))return "🌐";if(k.includes("electric"))return "⚡";if(k.includes("water"))return "💧";if(k.includes("gas"))return "⛽";if(k.includes("trash")||k.includes("garbage"))return "🗑️";if(k.includes("home owners association")||k.includes("homeowners association")||k==="hoa")return "🏘️";return "🧾";}
+
+  /* ══════════════════════════════════════════════════════════════
+     RENDER — existing features
+  ══════════════════════════════════════════════════════════════ */
+  function showAlerts(data){
+    const now=new Date();now.setHours(0,0,0,0);
+    const q=Object.values(data||{}).filter(b=>!b.paid&&b.dueDate).map(b=>({...b,days:Math.round((new Date(b.dueDate+"T00:00:00")-now)/86400000)})).filter(b=>b.days<=3);
+    $("alerts").replaceChildren(...q.map(b=>{const el=document.createElement("div");el.className="alert";el.innerHTML=`🔔 <b>Incoming Bills!</b> ${esc(b.name)} due — ${peso(b.amount)}`;return el;}));
+  }
+  function friendly(p){return p<=0?"No more left":p>=80?"Looking well stocked! ✨":p>=60?"Doing great! 🌷":p>=30?"Running a little low 🛒":"Almost all gone! 💛";}
+  function renderFunds(){
+    const a=Number(fundsLeft||0);const p=$("funds-panel");
+    p.classList.toggle("low",a>0&&a<100);p.classList.toggle("empty",a<=0);
+    $("funds-total").textContent=peso(a);
+    $("funds-message").textContent=a<=0?"Out of funds":a<100?"Less than ₱100 left":"Money available for upcoming expenses";
+  }
+  function renderSupplies(){
+    const e=Object.entries(supplies||{});
+    $("supply-count").textContent=`${e.length} ${e.length===1?"item":"items"}`;
+    if(!e.length){supplyList.innerHTML='<div class="empty">Your pantry is waiting for its first supplies 🌱</div>';return;}
+    supplyList.innerHTML=e.map(([id,s])=>{const p=Math.max(0,Math.min(100,Number(s.percentage)||0));const c=p>=60?"var(--green)":p>=30?"var(--yellow)":"var(--red)";return `<article class="card"><div class="supply-top"><div class="supply-icon">${esc(supplyEmoji(s.name))}</div><div class="supply-name">${esc(s.name)}</div><div class="percent">${p}%</div></div><div class="friendly">${friendly(p)}</div><div class="bar"><span style="width:${p}%;background:${c}"></span></div><div class="controls"><div class="admin-controls"><button class="step" data-step="-5" data-id="${esc(id)}" ${p===0?"disabled":""}>&minus;</button><button class="step" data-step="5" data-id="${esc(id)}" ${p===100?"disabled":""}>&plus;</button></div><div class="admin-controls"><button class="delete" data-delete-supply="${esc(id)}">Delete</button></div></div></article>`;}).join("");
+  }
+  function billTiming(d,paid){if(paid)return "Already Paid";const t=new Date();t.setHours(0,0,0,0);const dy=Math.round((new Date(d+"T00:00:00")-t)/86400000);if(dy<0)return `Overdue by ${Math.abs(dy)} ${Math.abs(dy)===1?"day":"days"}`;if(dy===0)return "Due today";if(dy===1)return "Due tomorrow";return `Due in ${dy} days`;}
+  function renderBills(){
+    const e=Object.entries(bills||{});
+    if(!e.length){billList.innerHTML='<div class="empty">No bills saved yet. Enjoy the calm! 🌤️</div>';return;}
+    billList.innerHTML=e.map(([id,b])=>`<article class="bill"><div class="bill-icon">${esc(billEmoji(b.name))}</div><div class="bill-main"><div class="bill-name">${esc(b.name)}</div><div class="bill-meta">Due ${esc(b.dueDate||"date not set")}</div></div><div class="bill-amount">${peso(b.amount)}</div><span class="status-cell"><span class="status ${b.paid?"paid":""}">${billTiming(b.dueDate,b.paid)}</span></span><div class="bill-actions">${isAdmin?(b.paid?'<span class="paid-label">Paid ✓</span>':`<button class="pay" data-paid="${esc(id)}">Mark paid</button>`)+`<button class="delete" data-delete-bill="${esc(id)}">Delete</button>`:""}</div></article>`).join("");
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     RENDER — Daily Expenses (any date, everyone can view)
+  ══════════════════════════════════════════════════════════════ */
+  function updateDateLabel(){
+    const label = isToday(selectedDate) ? `Today — ${fmtDate(selectedDate)}` : fmtDate(selectedDate);
+    $("exp-date-label").textContent = label;
+  }
+
+  function renderExpenses(){
+    updateDateLabel();
+    const entries = Object.entries(currentExpenses);
+    if(!entries.length){
+      const msg = isToday(selectedDate) ? "No expenses logged today. ✨" : "No expenses found for this date.";
+      expList.innerHTML = `<div class="exp-empty">${msg}</div>`;
+      return;
     }
-    function friendly(p) { return p <= 0 ? "No more left" : p >= 80 ? "Looking well stocked! ✨" : p >= 60 ? "Doing great! 🌷" : p >= 30 ? "Running a little low 🛒" : "Almost all gone! 💛"; }
-    function renderFunds() { const amount=Number(fundsLeft||0);const panel=$("funds-panel");panel.classList.toggle("low",amount>0&&amount<100);panel.classList.toggle("empty",amount<=0);$("funds-total").textContent=`₱${amount.toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2})}`;$("funds-message").textContent=amount<=0?"Out of funds":amount<100?"Less than ₱100 left":"Money available for upcoming expenses"; }
-    function renderSupplies() {
-      const entries=Object.entries(supplies || {}); $("supply-count").textContent=`${entries.length} ${entries.length===1?"item":"items"}`;
-      if (!entries.length) { supplyList.innerHTML='<div class="empty">Your pantry is waiting for its first supplies 🌱</div>'; return; }
-      supplyList.innerHTML=entries.map(([id,s])=>{ const p=Math.max(0,Math.min(100,Number(s.percentage)||0)); const color=p>=60?"var(--green)":p>=30?"var(--yellow)":"var(--red)"; return `<article class="card"><div class="supply-top"><div class="supply-icon">${esc(supplyEmoji(s.name))}</div><div class="supply-name">${esc(s.name)}</div><div class="percent">${p}%</div></div><div class="friendly">${friendly(p)}</div><div class="bar"><span style="width:${p}%;background:${color}"></span></div><div class="controls"><div class="admin-controls"><button class="step" data-step="-5" data-id="${esc(id)}" aria-label="Decrease ${esc(s.name)} by 5 percent" ${p===0?"disabled":""}>−</button><button class="step" data-step="5" data-id="${esc(id)}" aria-label="Increase ${esc(s.name)} by 5 percent" ${p===100?"disabled":""}>＋</button></div><div class="admin-controls"><button class="delete" data-delete-supply="${esc(id)}">Delete</button></div></div></article>`; }).join("");
+    let rows = "", total = 0;
+    for(const [id, item] of entries){
+      const t = Number(item.qty) * Number(item.price);
+      total += t;
+      rows += `<tr>
+        <td>${esc(item.name)}</td>
+        <td class="r">${Number(item.qty)}</td>
+        <td class="r">${peso(item.price)}</td>
+        <td class="r" style="font-weight:900">${peso(t)}</td>
+        <td class="r">
+          <button class="exp-del" data-del-exp="${esc(id)}" data-del-date="${esc(selectedDate)}" title="Delete">✕</button>
+        </td>
+      </tr>`;
     }
-    function billTiming(date, paid) {
-      if (paid) return "Already Paid";
-      const today=new Date(); today.setHours(0,0,0,0); const days=Math.round((new Date(`${date}T00:00:00`)-today)/86400000);
-      if(days<0)return `Overdue by ${Math.abs(days)} ${Math.abs(days)===1?"day":"days"}`;
-      if(days===0)return "Due today"; if(days===1)return "Due tomorrow"; return `Due in ${days} days`;
+    expList.innerHTML = `<div class="exp-wrap">
+      <table class="exp-table">
+        <thead><tr>
+          <th>Item</th><th class="r">Qty</th><th class="r">Unit Price</th><th class="r">Total</th><th></th>
+        </tr></thead>
+        <tbody>
+          ${rows}
+          <tr class="sub-row">
+            <td colspan="3" class="r">Day Total</td>
+            <td class="r">${peso(total)}</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+  }
+
+  /* Live listener — switches when date changes */
+  function listenToExpenses(date){
+    if(expUnsubscribe) expUnsubscribe(); // detach previous listener
+    expUnsubscribe = onValue(
+      ref(database, `expenses/${date}`),
+      snap => { currentExpenses = snap.val() || {}; renderExpenses(); },
+      err  => setNotice(`Expenses error: ${err.message}`, "error")
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     RENDER — Report table (reused for page + dialog + JPG)
+  ══════════════════════════════════════════════════════════════ */
+  function buildReportTable(reportData){
+    const { from, to, days, grandTotal } = reportData;
+    const sortedDays = Object.entries(days).sort(([a],[b]) => a.localeCompare(b));
+    let rows = "";
+    for(const [date,{items,subtotal}] of sortedDays){
+      rows += `<tr class="date-row"><td colspan="4">${fmtDate(date)}</td></tr>`;
+      const list = Array.isArray(items) ? items : Object.values(items);
+      for(const item of list){
+        const t = Number(item.qty)*Number(item.price);
+        rows += `<tr>
+          <td>${esc(item.name)}</td>
+          <td class="r">${Number(item.qty)}</td>
+          <td class="r">${peso(item.price)}</td>
+          <td class="r" style="font-weight:900">${peso(t)}</td>
+        </tr>`;
+      }
+      rows += `<tr class="sub-row"><td colspan="3" class="r">Daily Subtotal</td><td class="r">${peso(subtotal)}</td></tr>`;
     }
-    function renderBills() {
-      const entries=Object.entries(bills||{});
-      if(!entries.length){billList.innerHTML='<div class="empty">No bills saved yet. Enjoy the calm! 🌤️</div>';return;}
-      billList.innerHTML=entries.map(([id,b])=>`<article class="bill"><div class="bill-icon">${esc(billEmoji(b.name))}</div><div class="bill-main"><div class="bill-name">${esc(b.name)}</div><div class="bill-meta">Due ${esc(b.dueDate||"date not set")}</div></div><div class="bill-amount">₱${Number(b.amount||0).toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2})}</div><span class="status-cell"><span class="status ${b.paid?"paid":""}">${billTiming(b.dueDate,b.paid)}</span></span><div class="bill-actions">${isAdmin?(b.paid?'<span class="paid-label">Paid ✓</span>':`<button class="pay" data-paid="${esc(id)}">Mark paid</button>`)+`<button class="delete" data-delete-bill="${esc(id)}">Delete</button>`:""}</div></article>`).join("");
+    rows += `<tr class="grand-row"><td colspan="3" class="r">Grand Total</td><td class="r">${peso(grandTotal)}</td></tr>`;
+    return `<div class="exp-wrap">
+      <div style="padding:20px 18px 4px">
+        <div style="font-weight:900;font-size:18px;color:#403b52">📊 Expense Report</div>
+        <div style="font-size:13px;color:#888397;font-weight:800;margin-top:4px">${fmtShort(from)} — ${fmtShort(to)}</div>
+      </div>
+      <table class="exp-table" style="border-radius:0">
+        <thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Unit Price</th><th class="r">Total</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  }
+
+  function renderReport(){
+    if(!currentReport) return;
+    const output  = $("report-output");
+    const actions = $("report-actions");
+    if(!Object.keys(currentReport.days).length){
+      output.innerHTML = '<div class="exp-empty" style="margin-top:14px">No expenses found for this date range. 🌱</div>';
+      actions.style.display = "none"; return;
     }
-    function setAdmin(value) { isAdmin=value; app.classList.toggle("admin",value); $("mode").textContent=value?"✅ Signed in":"🔒 Signed out"; $("mode").classList.toggle("admin",value); $("auth-button").textContent=value?"Sign out":"Sign in with Google"; renderBills(); }
-    async function write(operation) { try { await operation(); return true; } catch(error) { setNotice(`Could not save changes: ${error.message}. Check the Realtime Database URL and database rules.`,`error`); return false; } }
-    $("title").addEventListener("dblclick",()=>{ if(isAdmin){setAdmin(false);return;} $("admin-password").value="";$("admin-error").textContent="";$("admin-dialog").showModal();setTimeout(()=>$("admin-password").focus(),20); });
-    let lastTap=0; $("title").addEventListener("touchend",e=>{const now=Date.now();if(now-lastTap<450){e.preventDefault();$("title").dispatchEvent(new Event("dblclick"));}lastTap=now;});
-    $("admin-form").addEventListener("submit",e=>{e.preventDefault();if($("admin-password").value==="143143"){setAdmin(true);closeDialog("admin-dialog");setNotice("Admin mode is on for this browser session.","success");}else{$("admin-error").textContent="That password didn’t match. Try again.";}});
-    document.querySelectorAll("[data-close]").forEach(button=>button.addEventListener("click",()=>closeDialog(button.dataset.close)));
-    $("add-supply").addEventListener("click",()=>{$("supply-name").value="";$('supply-error').textContent="";$("supply-dialog").showModal();});
-    $("supply-form").addEventListener("submit",e=>{e.preventDefault();if(!database)return;const name=$("supply-name").value.trim();if(!name)return;const icon=supplyEmoji(name);const itemRef=push(ref(database,"supplies"));write(()=>set(itemRef,{name,icon,percentage:Math.floor(Math.random()*71)+20}));closeDialog("supply-dialog");});
-    $("add-bill").addEventListener("click",()=>{$("bill-form").reset();$("bill-error").textContent="";$("bill-date").value=new Date().toISOString().slice(0,10);$("bill-dialog").showModal();});
-    $("bill-form").addEventListener("submit",e=>{e.preventDefault();if(!database)return;const billRef=push(ref(database,"bills"));const bill={name:$("bill-name").value.trim(),amount:Number($("bill-amount").value),dueDate:$("bill-date").value,paid:false};if(!bill.name||!Number.isFinite(bill.amount)||bill.amount<=0||!bill.dueDate)return;write(()=>set(billRef,bill));closeDialog("bill-dialog");});
-    $("edit-funds").addEventListener("click",()=>{$("funds-input").value=Number(fundsLeft||0).toFixed(2);$("funds-error").textContent="";$("funds-dialog").showModal();});
-    $("funds-form").addEventListener("submit",async e=>{e.preventDefault();if(!database)return;const amount=Number($("funds-input").value);if(!Number.isFinite(amount)||amount<0){$("funds-error").textContent="Enter an amount of zero or more.";return;}const saved=await write(()=>set(ref(database,"funds/amount"),Number(amount.toFixed(2))));if(saved)closeDialog("funds-dialog");});
-    supplyList.addEventListener("click",e=>{const step=e.target.closest("[data-step]");if(step&&database){const id=step.dataset.id,current=Math.max(0,Math.min(100,Number(supplies[id]?.percentage)||0));write(()=>update(ref(database,`supplies/${id}`),{percentage:Math.max(0,Math.min(100,current+Number(step.dataset.step)))}));}const del=e.target.closest("[data-delete-supply]");if(del&&database&&confirm(`Remove ${supplies[del.dataset.deleteSupply]?.name||"this supply"}?`))write(()=>remove(ref(database,`supplies/${del.dataset.deleteSupply}`)));});
-    billList.addEventListener("click",e=>{const paid=e.target.closest("[data-paid]");if(paid&&database)write(()=>update(ref(database,`bills/${paid.dataset.paid}`),{paid:true}));const del=e.target.closest("[data-delete-bill]");if(del&&database&&confirm(`Delete ${bills[del.dataset.deleteBill]?.name||"this bill"}?`))write(()=>remove(ref(database,`bills/${del.dataset.deleteBill}`)));});
-    function stopLoading(){setTimeout(()=>$("loading").classList.add("done"),1500);}
-    function escapeAlerts(data){showAlerts(data);}
-    async function start() {
-      const required=["apiKey","appId","databaseURL"];
-      const missing=required.filter(key=>!firebaseConfig[key]||firebaseConfig[key].includes("YOUR_") );
-      if(firebaseConfig.projectId!=="rina-12f9e"){setNotice("Firebase configuration projectId must be rina-12f9e.","error");stopLoading();return;}
-      if(missing.length){setNotice(`Firebase is not connected yet. Add the real ${missing.join(", ")} from your Firebase project to firebase-config.js. No database URL has been guessed.`,"error");stopLoading();return;}
+    output.innerHTML = `<div style="margin-top:14px">${buildReportTable(currentReport)}</div>`;
+    actions.style.display = "flex";
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     RENDER — Saved Reports List
+  ══════════════════════════════════════════════════════════════ */
+  function renderSavedReports(){
+    const entries = Object.entries(savedReports);
+    if(!entries.length){
+      savedList.innerHTML = '<div class="exp-empty">No saved reports yet. Generate one above! 📊</div>'; return;
+    }
+    savedList.innerHTML = entries
+      .sort(([,a],[,b]) => (b.createdAt||0)-(a.createdAt||0))
+      .map(([id,r]) => `<div class="sr-card" data-view="${esc(id)}" role="button" tabindex="0">
+        <div class="sr-icon">📋</div>
+        <div class="sr-info">
+          <div class="sr-title">${esc(r.title||r.dateFrom+" to "+r.dateTo)}</div>
+          <div class="sr-meta">Saved ${new Date(r.createdAt||0).toLocaleDateString("en-PH",{month:"short",day:"numeric",year:"numeric"})}</div>
+        </div>
+        <div class="sr-total">${peso(r.grandTotal)}</div>
+      </div>`).join("");
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     AUTH — hidden; triggered by double-click / double-tap on title
+  ══════════════════════════════════════════════════════════════ */
+  function setAdmin(value, user){
+    isAdmin = value;
+    app.classList.toggle("admin", value);
+    if(value){
+      $("mode").textContent = `✅ ${user?.displayName || "Admin"}`;
+      $("mode").style.display = "block";
+    } else {
+      $("mode").textContent = "";
+      $("mode").style.display = "none";
+    }
+    $("mode").classList.toggle("admin", value);
+    renderBills();
+    renderExpenses();
+  }
+
+  async function triggerAuth(){
+    if(!auth) return;
+    if(isAdmin){
+      await signOut(auth);
+    } else {
       try {
-        const firebaseApp=initializeApp(firebaseConfig);database=getDatabase(firebaseApp);
-        onValue(ref(database,"funds/amount"),snapshot=>{const amount=Number(snapshot.val());fundsLeft=Number.isFinite(amount)?amount:0;renderFunds();},error=>setNotice(`Could not read funds: ${error.message}`,"error"));
-        onValue(ref(database,"supplies"),async snapshot=>{supplies=snapshot.val()||{};renderSupplies();if(snapshot.exists()||initializingSupplies)return;initializingSupplies=true;try{await runTransaction(ref(database,"supplies"),current=>{if(current!==null)return;const initial={};for(const [name,icon] of defaults){const itemRef=push(ref(database,"supplies"));initial[itemRef.key]={name,icon,percentage:Math.floor(Math.random()*71)+20};}return initial;},{applyLocally:false});}catch(error){setNotice(`Could not initialize supplies: ${error.message}. Check the database rules; this no-login app needs database write access for admin operations.`,"error");}finally{initializingSupplies=false;}},error=>setNotice(`Could not read supplies: ${error.message}. Check the database URL and read rules.`,"error"));
-        onValue(ref(database,"bills"),snapshot=>{bills=snapshot.val()||{};renderBills();escapeAlerts(bills);},error=>setNotice(`Could not read bills: ${error.message}`,"error"));
-      } catch(error){setNotice(`Firebase could not start: ${error.message}`,"error");}
-      stopLoading();
+        const result = await signInWithPopup(auth, new GoogleAuthProvider());
+        if(result.user.email !== ADMIN_EMAIL){
+          setNotice("⛔ That account isn't the admin account. Signed back out.", "error");
+          await signOut(auth);
+        }
+      } catch(err){
+        if(err.code !== "auth/popup-closed-by-user" && err.code !== "auth/cancelled-popup-request")
+          setNotice(`Sign-in error: ${err.message}`, "error");
+      }
     }
-    start();
-  </script>
+  }
+
+  /* Double-click title → sign in / sign out */
+  $("title").addEventListener("dblclick", triggerAuth);
+
+  /* Double-tap on mobile */
+  let lastTap = 0;
+  $("title").addEventListener("touchend", e => {
+    const now = Date.now();
+    if(now - lastTap < 450){ e.preventDefault(); triggerAuth(); }
+    lastTap = now;
+  });
+
+  /* ══════════════════════════════════════════════════════════════
+     WRITE HELPER
+  ══════════════════════════════════════════════════════════════ */
+  async function write(op){
+    try { await op(); return true; }
+    catch(e){ setNotice(`Could not save: ${e.message}`, "error"); return false; }
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     DIALOG CLOSE BUTTONS
+  ══════════════════════════════════════════════════════════════ */
+  document.querySelectorAll("[data-close]").forEach(btn =>
+    btn.addEventListener("click", () => closeDialog(btn.dataset.close))
+  );
+
+  /* ══════════════════════════════════════════════════════════════
+     EXISTING FORMS
+  ══════════════════════════════════════════════════════════════ */
+  $("add-supply").addEventListener("click",()=>{ $("supply-name").value=""; $("supply-error").textContent=""; $("supply-dialog").showModal(); });
+  $("supply-form").addEventListener("submit",e=>{ e.preventDefault(); if(!database)return; const name=$("supply-name").value.trim(); if(!name)return; write(()=>{ const r=push(ref(database,"supplies")); return set(r,{name,icon:supplyEmoji(name),percentage:Math.floor(Math.random()*71)+20}); }); closeDialog("supply-dialog"); });
+
+  $("add-bill").addEventListener("click",()=>{ $("bill-form").reset(); $("bill-error").textContent=""; $("bill-date").value=TODAY; $("bill-dialog").showModal(); });
+  $("bill-form").addEventListener("submit",e=>{ e.preventDefault(); if(!database)return; const bill={name:$("bill-name").value.trim(),amount:Number($("bill-amount").value),dueDate:$("bill-date").value,paid:false}; if(!bill.name||!Number.isFinite(bill.amount)||bill.amount<=0||!bill.dueDate)return; write(()=>set(push(ref(database,"bills")),bill)); closeDialog("bill-dialog"); });
+
+  $("edit-funds").addEventListener("click",()=>{ $("funds-input").value=Number(fundsLeft||0).toFixed(2); $("funds-error").textContent=""; $("funds-dialog").showModal(); });
+  $("funds-form").addEventListener("submit",async e=>{ e.preventDefault(); if(!database)return; const a=Number($("funds-input").value); if(!Number.isFinite(a)||a<0){$("funds-error").textContent="Enter an amount of zero or more.";return;} const ok=await write(()=>set(ref(database,"funds/amount"),Number(a.toFixed(2)))); if(ok)closeDialog("funds-dialog"); });
+
+  supplyList.addEventListener("click",e=>{ const step=e.target.closest("[data-step]"); if(step&&database){ const id=step.dataset.id,cur=Math.max(0,Math.min(100,Number(supplies[id]?.percentage)||0)); write(()=>update(ref(database,`supplies/${id}`),{percentage:Math.max(0,Math.min(100,cur+Number(step.dataset.step)))})); } const del=e.target.closest("[data-delete-supply]"); if(del&&database&&confirm(`Remove ${supplies[del.dataset.deleteSupply]?.name||"this supply"}?`)) write(()=>remove(ref(database,`supplies/${del.dataset.deleteSupply}`))); });
+
+  billList.addEventListener("click",e=>{ const paid=e.target.closest("[data-paid]"); if(paid&&database) write(()=>update(ref(database,`bills/${paid.dataset.paid}`),{paid:true})); const del=e.target.closest("[data-delete-bill]"); if(del&&database&&confirm(`Delete ${bills[del.dataset.deleteBill]?.name||"this bill"}?`)) write(()=>remove(ref(database,`bills/${del.dataset.deleteBill}`))); });
+
+  /* ══════════════════════════════════════════════════════════════
+     EXPENSES — Date picker & Navigation (everyone can browse)
+  ══════════════════════════════════════════════════════════════ */
+  $("exp-date-pick").value = TODAY;
+
+  function shiftDate(dateStr, days){
+    const d = new Date((dateStr || TODAY) + "T00:00:00");
+    d.setDate(d.getDate() + days);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  $("exp-prev").addEventListener("click", () => {
+    selectedDate = shiftDate($("exp-date-pick").value || selectedDate, -1);
+    $("exp-date-pick").value = selectedDate;
+    if(database) listenToExpenses(selectedDate);
+  });
+
+  $("exp-next").addEventListener("click", () => {
+    selectedDate = shiftDate($("exp-date-pick").value || selectedDate, 1);
+    $("exp-date-pick").value = selectedDate;
+    if(database) listenToExpenses(selectedDate);
+  });
+
+  $("exp-date-pick").addEventListener("change", () => {
+    selectedDate = $("exp-date-pick").value || TODAY;
+    if(database) listenToExpenses(selectedDate);
+  });
+
+  /* ══════════════════════════════════════════════════════════════
+     EXPENSES — Add (admin only)
+  ══════════════════════════════════════════════════════════════ */
+  $("add-expense").addEventListener("click",()=>{
+    $("expense-form").reset();
+    $("exp-dlg-date").value = selectedDate; // pre-fill with currently viewed date
+    $("expense-error").textContent = "";
+    $("expense-dialog").showModal();
+    setTimeout(()=>$("exp-name").focus(), 60);
+  });
+
+  $("expense-form").addEventListener("submit", async e=>{
+    e.preventDefault();
+    if(!database||!isAdmin) return;
+    const date  = $("exp-dlg-date").value;
+    const name  = $("exp-name").value.trim();
+    const qty   = Number($("exp-qty").value);
+    const price = Number($("exp-price").value);
+    if(!date||!name||qty<=0||price<=0){
+      $("expense-error").textContent = "Please fill in all fields correctly."; return;
+    }
+    const ok = await write(()=> set(push(ref(database,`expenses/${date}`)), {name,qty,price,createdAt:Date.now()}));
+    if(ok){
+      closeDialog("expense-dialog");
+      // If admin added to a different date than currently viewed, switch to it
+      if(date !== selectedDate){
+        $("exp-date-pick").value = date;
+        selectedDate = date;
+        listenToExpenses(date);
+      }
+    }
+  });
+
+  /* Delete expense (admin only, works for any date shown) */
+  expList.addEventListener("click", e=>{
+    const del = e.target.closest("[data-del-exp]");
+    if(del && database && isAdmin && confirm("Delete this expense?")){
+      write(()=> remove(ref(database,`expenses/${del.dataset.delDate}/${del.dataset.delExp}`)));
+    }
+  });
+
+  /* ══════════════════════════════════════════════════════════════
+     EXPENSE REPORT — Generate
+  ══════════════════════════════════════════════════════════════ */
+  $("btn-generate").addEventListener("click", async ()=>{
+    if(!database||!isAdmin) return;
+    const from = $("report-from").value;
+    const to   = $("report-to").value;
+    if(!from||!to){ setNotice("Please select both start and end dates.","error"); return; }
+    if(from > to){ setNotice("Start date must be before end date.","error"); return; }
+    const btn = $("btn-generate");
+    btn.disabled = true; btn.textContent = "Loading…";
+    try {
+      const snap = await get(query(ref(database,"expenses"), orderByKey(), startAt(from), endAt(to)));
+      const raw  = snap.val() || {};
+      const days = {};
+      let grandTotal = 0;
+      for(const [date,items] of Object.entries(raw)){
+        const list     = Object.entries(items).map(([id,item])=>({id,name:item.name,qty:Number(item.qty),price:Number(item.price)}));
+        const subtotal = list.reduce((s,i)=>s+i.qty*i.price,0);
+        days[date]     = {items:list,subtotal};
+        grandTotal    += subtotal;
+      }
+      currentReport = {from,to,days,grandTotal};
+      renderReport();
+    } catch(err){
+      setNotice(`Could not load expenses: ${err.message}`,"error");
+    } finally {
+      btn.disabled = false; btn.textContent = "Generate Report";
+    }
+  });
+
+  /* ══════════════════════════════════════════════════════════════
+     EXPENSE REPORT — Save
+  ══════════════════════════════════════════════════════════════ */
+  $("btn-save-report").addEventListener("click", async ()=>{
+    if(!currentReport||!database||!isAdmin) return;
+    const { from,to,days,grandTotal } = currentReport;
+    const title = `${fmtShort(from)} – ${fmtShort(to)}`;
+    const btn = $("btn-save-report");
+    btn.disabled = true;
+    const daysForDB = {};
+    for(const [date,{items,subtotal}] of Object.entries(days)){
+      daysForDB[date] = {subtotal,items:Object.fromEntries(items.map((item,i)=>[String(i),item]))};
+    }
+    const ok = await write(()=> set(push(ref(database,"savedReports")),{
+      title,dateFrom:from,dateTo:to,grandTotal,createdAt:Date.now(),days:daysForDB
+    }));
+    if(ok) setNotice(`"${title}" saved! 💾`,"success");
+    btn.disabled = false;
+  });
+
+  /* ══════════════════════════════════════════════════════════════
+     EXPORT JPG (shared by report + saved reports)
+  ══════════════════════════════════════════════════════════════ */
+  async function doExportJPG(reportData, filename){
+    if(typeof html2canvas === "undefined"){
+      setNotice("Export library not loaded yet. Try again in a moment.","error"); return;
+    }
+    const stage = $("export-stage");
+    stage.innerHTML = `
+      <style>
+        *{box-sizing:border-box;font-family:Nunito,system-ui,sans-serif}
+        .exp-wrap{background:#fff;border-radius:20px;overflow:hidden}
+        .exp-table{width:100%;border-collapse:collapse;font-size:14px}
+        .exp-table th{background:#f7f4ff;color:#7161cf;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;padding:11px 14px;text-align:left}
+        .exp-table th.r,.exp-table td.r{text-align:right}
+        .exp-table td{padding:11px 14px;border-top:1px solid #f5f1f0;font-weight:700}
+        .exp-table .date-row td{background:#fffbf0;color:#888397;font-size:12px;font-weight:900;padding:8px 14px;border-top:2px solid #f0e9e3}
+        .exp-table .sub-row td{background:#f7f4ff;color:#7161cf;font-weight:900}
+        .exp-table .grand-row td{background:linear-gradient(110deg,#e6f8e9,#e7f2ff);font-weight:900;font-size:15px;color:#438a5d;border-top:2px solid #c3e6cb}
+      </style>
+      ${buildReportTable(reportData)}
+    `;
+    stage.style.visibility = "visible";
+    try {
+      const canvas = await html2canvas(stage,{scale:2,useCORS:true,backgroundColor:"#fff",logging:false});
+      const link = document.createElement("a");
+      link.download = filename || "expense-report.jpg";
+      link.href = canvas.toDataURL("image/jpeg", 0.95);
+      link.click();
+    } catch(err){
+      setNotice(`Export failed: ${err.message}`,"error");
+    } finally {
+      stage.style.visibility = "hidden";
+      stage.innerHTML = "";
+    }
+  }
+
+  $("btn-export-jpg").addEventListener("click", ()=>{
+    if(!currentReport) return;
+    doExportJPG(currentReport, `expense-report-${currentReport.from}-to-${currentReport.to}.jpg`);
+  });
+
+  /* ══════════════════════════════════════════════════════════════
+     SAVED REPORTS — View / Delete / Export
+  ══════════════════════════════════════════════════════════════ */
+  savedList.addEventListener("click", e=>{
+    const card = e.target.closest("[data-view]");
+    if(!card) return;
+    viewingId = card.dataset.view;
+    const r = savedReports[viewingId];
+    if(!r) return;
+    $("view-report-title").textContent = r.title || `${r.dateFrom} to ${r.dateTo}`;
+    $("view-report-content").innerHTML = buildReportTable(r);
+    $("view-report-dialog").showModal();
+  });
+
+  $("btn-view-export").addEventListener("click", ()=>{
+    if(!viewingId) return;
+    const r = savedReports[viewingId];
+    if(!r) return;
+    doExportJPG(r, `expense-report-${r.dateFrom}-to-${r.dateTo}.jpg`);
+  });
+
+  $("btn-delete-report").addEventListener("click", async ()=>{
+    if(!viewingId||!database||!isAdmin) return;
+    const r = savedReports[viewingId];
+    if(!confirm(`Delete report "${r?.title || viewingId}"?`)) return;
+    const ok = await write(()=> remove(ref(database,`savedReports/${viewingId}`)));
+    if(ok){ closeDialog("view-report-dialog"); setNotice("Report deleted.","success"); viewingId=null; }
+  });
+
+  /* ══════════════════════════════════════════════════════════════
+     BOOT
+  ══════════════════════════════════════════════════════════════ */
+  function stopLoading(){ setTimeout(()=>$("loading").classList.add("done"), 1200); }
+
+  // Set default report range = first of this month → today
+  $("report-from").value = TODAY.slice(0,8) + "01";
+  $("report-to").value   = TODAY;
+
+  async function start(){
+    const required = ["apiKey","appId","databaseURL"];
+    const missing  = required.filter(k=>!firebaseConfig[k]||firebaseConfig[k].includes("YOUR_"));
+    if(firebaseConfig.projectId !== "rina-12f9e"){ setNotice("Firebase projectId must be rina-12f9e.","error"); stopLoading(); return; }
+    if(missing.length){ setNotice(`Firebase not connected. Add: ${missing.join(", ")} to firebase-config.js.`,"error"); stopLoading(); return; }
+    try {
+      const fbApp = initializeApp(firebaseConfig);
+      database    = getDatabase(fbApp);
+      auth        = getAuth(fbApp);
+
+      /* Auth state — single source of truth */
+      onAuthStateChanged(auth, user=>{
+        if(user && user.email === ADMIN_EMAIL){
+          setAdmin(true, user);
+          setNotice(`Welcome back, ${user.displayName || user.email}! 🌸 Admin mode active.`,"success");
+        } else {
+          setAdmin(false, null);
+          if(user) signOut(auth);
+        }
+      });
+
+      /* Realtime data listeners */
+      onValue(ref(database,"funds/amount"), snap=>{
+        const a=Number(snap.val()); fundsLeft=Number.isFinite(a)?a:0; renderFunds();
+      }, e=>setNotice(`Funds error: ${e.message}`,"error"));
+
+      onValue(ref(database,"supplies"), async snap=>{
+        supplies=snap.val()||{}; renderSupplies();
+        if(snap.exists()||initializingSupplies) return;
+        initializingSupplies=true;
+        try {
+          await runTransaction(ref(database,"supplies"), cur=>{
+            if(cur!==null) return;
+            const init={};
+            for(const [name,icon] of defaults){ const r=push(ref(database,"supplies")); init[r.key]={name,icon,percentage:Math.floor(Math.random()*71)+20}; }
+            return init;
+          },{applyLocally:false});
+        } catch(e){ setNotice(`Init supplies: ${e.message}`,"error"); }
+        finally { initializingSupplies=false; }
+      }, e=>setNotice(`Supplies error: ${e.message}`,"error"));
+
+      onValue(ref(database,"bills"), snap=>{
+        bills=snap.val()||{}; renderBills(); showAlerts(bills);
+      }, e=>setNotice(`Bills error: ${e.message}`,"error"));
+
+      /* Start listening to today's expenses by default */
+      listenToExpenses(selectedDate);
+
+      /* Saved reports (live) */
+      onValue(ref(database,"savedReports"), snap=>{
+        savedReports=snap.val()||{}; renderSavedReports();
+      }, ()=>{});
+
+    } catch(e){ setNotice(`Firebase startup error: ${e.message}`,"error"); }
+    stopLoading();
+  }
+
+  start();
+</script>
 </body>
 </html>
