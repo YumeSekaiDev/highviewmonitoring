@@ -140,6 +140,30 @@
     /* ── Export stage (off-screen, for html2canvas) ────────────── */
     #export-stage{position:fixed;left:-9999px;top:0;width:720px;background:#fff;font-family:Nunito,system-ui,sans-serif;visibility:hidden}
 
+    /* ── Intro Sequence Animation ─────────────────────────────── */
+    .intro-pending{opacity:0}
+    .intro-funds{animation:introFadeUp .9s cubic-bezier(.22,1,.36,1) both}
+    .intro-funds .funds-icon{animation:introPop .8s cubic-bezier(.34,1.56,.64,1) .25s both}
+    .intro-slide{animation:introSlideIn .85s cubic-bezier(.22,1,.36,1) both}
+    .intro-slide .bill{animation:introSlideIn .75s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(var(--i,0)*160ms)}
+    .intro-slide .empty{animation:introFadeUp .75s ease both}
+    .intro-expenses{animation:introFadeUp .85s cubic-bezier(.22,1,.36,1) both}
+    .intro-expenses .exp-table tbody tr.exp-row{animation:introFadeUp .7s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(var(--i,0)*160ms)}
+    .intro-expenses .exp-empty{animation:introFadeUp .7s ease both}
+    .intro-expenses .exp-total-row{animation:introFadeUp .75s ease both}
+    @keyframes introFadeUp{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+    @keyframes introSlideIn{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+    @keyframes introPop{from{opacity:0;transform:scale(.6) rotate(-8deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media (prefers-reduced-motion: reduce){
+      .intro-pending{opacity:1}
+      .intro-funds,.intro-slide,.intro-expenses,.intro-funds .funds-icon,.intro-slide .bill,.intro-slide .empty,.intro-expenses .exp-table tbody tr.exp-row,.intro-expenses .exp-empty,.intro-expenses .exp-total-row{animation:none!important}
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+    }
+    @media(max-width:580px){
+      .intro-slide .bill{animation-delay:calc(var(--i,0)*130ms)}
+      .intro-expenses .exp-table tbody tr.exp-row{animation-delay:calc(var(--i,0)*130ms)}
+    }
+
     /* ── Loading ────────────────────────────────────────────────── */
     .loading{position:fixed;inset:0;background:linear-gradient(135deg,#fff0e8,#f5ecff);display:grid;place-items:center;z-index:100;transition:opacity .4s,visibility .4s}
     .loading.done{opacity:0;visibility:hidden}
@@ -206,7 +230,7 @@
   <div class="notice" id="notice" role="status"></div>
 
   <!-- ── Funds ───────────────────────────────────────────────────── -->
-  <section class="funds-panel" id="funds-panel" aria-labelledby="funds-heading">
+  <section class="funds-panel intro-pending" id="funds-panel" aria-labelledby="funds-heading">
     <div class="funds-icon" aria-hidden="true">💰</div>
     <div class="funds-copy">
       <p class="funds-kicker">HOUSEHOLD BUDGET</p>
@@ -218,7 +242,7 @@
   </section>
 
   <!-- ── Bills ──────────────────────────────────────────────────── -->
-  <section aria-labelledby="bills-heading">
+  <section id="bills-section" class="intro-pending" aria-labelledby="bills-heading">
     <div class="section-head">
       <div><h2 id="bills-heading">Household bills 🧾</h2><p>Due dates at a glance, no surprises!</p></div>
       <button class="add" id="add-bill">＋ Add bill</button>
@@ -239,7 +263,7 @@
   </section>
 
   <!-- ── Daily Expenses — everyone can view, admin can edit ─────── -->
-  <section aria-labelledby="expenses-heading">
+  <section id="expenses-section" class="intro-pending" aria-labelledby="expenses-heading">
     <div class="section-head">
       <div>
         <h2 id="expenses-heading">Daily Expenses 💸</h2>
@@ -428,6 +452,47 @@
   function supplyEmoji(name){return SUPPLY_EMOJI[normalizeName(name)]||"📦";}
   function billEmoji(name){const k=normalizeName(name);if(k.includes("internet")||k.includes("wifi")||k.includes("wi fi"))return "🌐";if(k.includes("electric"))return "⚡";if(k.includes("water"))return "💧";if(k.includes("gas"))return "⛽";if(k.includes("trash")||k.includes("garbage"))return "🗑️";if(k.includes("home owners association")||k.includes("homeowners association")||k==="hoa")return "🏘️";return "🧾";}
 
+  /* ── Intro sequence (plays once, after first real data) ────── */
+  const prefersReduced = matchMedia("(prefers-reduced-motion: reduce)");
+  let introPlayed=false, introCounting=false;
+  const introLoaded={funds:false,bills:false,expenses:false};
+  let fundsCountRaf=0, expCountRaf=0;
+  function countUp(el,target,duration,done){
+    if(!el){done?.();return;}
+    cancelAnimationFrame(el=== $("funds-total")?fundsCountRaf:expCountRaf);
+    if(prefersReduced.matches||!duration){el.textContent=peso(target);done?.();return;}
+    const start=performance.now();
+    const tick=t=>{const p=Math.min(1,(t-start)/duration),e=1-Math.pow(1-p,3);el.textContent=peso(target*e);if(p<1){const id=requestAnimationFrame(tick);if(el===$("funds-total"))fundsCountRaf=id;else expCountRaf=id;}else{el.textContent=peso(target);done?.();}};
+    const id=requestAnimationFrame(tick); if(el===$("funds-total"))fundsCountRaf=id;else expCountRaf=id;
+  }
+  function maybePlayIntro(){
+    if(introPlayed||!Object.values(introLoaded).every(Boolean))return;
+    introPlayed=true;
+    const funds=$("funds-panel"),billsEl=$("bills-section"),expEl=$("expenses-section");
+    if(prefersReduced.matches){[funds,billsEl,expEl].forEach(el=>el?.classList.remove("intro-pending"));renderFunds();return;}
+    // 1 — Funds Left: fade in + count up
+    introCounting=true;
+    funds.classList.remove("intro-pending");funds.classList.add("intro-funds");
+    countUp($("funds-total"),Number(fundsLeft||0),1600,()=>{introCounting=false;});
+    setTimeout(()=>{[funds,billsEl,expEl].forEach(el=>el?.classList.remove("intro-funds","intro-slide","intro-expenses"));},11000);
+    // 2 — Household Bills: slide in, staggered (CSS --i)
+    const billCount=billList.querySelectorAll(".bill").length;
+    const billsDelay=950;
+    setTimeout(()=>{billsEl.classList.remove("intro-pending");billsEl.classList.add("intro-slide");},billsDelay);
+    // 3 — Today's Expenses: items stagger, then total counts up
+    const expCount=expList.querySelectorAll(".exp-row").length;
+    const expDelay=billsDelay+550+Math.min(billCount,6)*160;
+    const totalDelay=expDelay+Math.min(expCount,8)*160+300;
+    setTimeout(()=>{
+      expEl.classList.remove("intro-pending");expEl.classList.add("intro-expenses");
+      const totalEl=expList.querySelector(".exp-total-value");
+      if(totalEl){totalEl.textContent=peso(0);const row=totalEl.closest(".exp-total-row");if(row)row.style.animationDelay=(Math.min(expCount,8)*160+140)+"ms";
+        setTimeout(()=>countUp(totalEl,Number(totalEl.dataset.total||0),1300),Math.max(0,totalDelay-expDelay));}
+    },expDelay);
+  }
+  // Safety: never trap content hidden if a listener errors / never fires
+  setTimeout(()=>{if(!introPlayed){introLoaded.funds=introLoaded.bills=introLoaded.expenses=true;maybePlayIntro();}},6000);
+
   /* ══════════════════════════════════════════════════════════════
      RENDER — existing features
   ══════════════════════════════════════════════════════════════ */
@@ -440,7 +505,7 @@
   function renderFunds(){
     const a=Number(fundsLeft||0);const p=$("funds-panel");
     p.classList.toggle("low",a>0&&a<100);p.classList.toggle("empty",a<=0);
-    $("funds-total").textContent=peso(a);
+    if(!introCounting) $("funds-total").textContent=peso(a);
     $("funds-message").textContent=a<=0?"Out of funds":a<100?"Less than ₱100 left":"Money available for upcoming expenses";
   }
   function renderSupplies(){
@@ -453,7 +518,7 @@
   function renderBills(){
     const e=Object.entries(bills||{});
     if(!e.length){billList.innerHTML='<div class="empty">No bills saved yet. Enjoy the calm! 🌤️</div>';return;}
-    billList.innerHTML=e.map(([id,b])=>`<article class="bill"><div class="bill-icon">${esc(billEmoji(b.name))}</div><div class="bill-main"><div class="bill-name">${esc(b.name)}</div><div class="bill-meta">Due ${esc(b.dueDate||"date not set")}</div></div><div class="bill-amount">${peso(b.amount)}</div><span class="status-cell"><span class="status ${b.paid?"paid":""}">${billTiming(b.dueDate,b.paid)}</span></span><div class="bill-actions">${isAdmin?(b.paid?'<span class="paid-label">Paid ✓</span>':`<button class="pay" data-paid="${esc(id)}">Mark paid</button>`)+`<button class="delete" data-delete-bill="${esc(id)}">Delete</button>`:""}</div></article>`).join("");
+    billList.innerHTML=e.map(([id,b],i)=>`<article class="bill" style="--i:${i}"><div class="bill-icon">${esc(billEmoji(b.name))}</div><div class="bill-main"><div class="bill-name">${esc(b.name)}</div><div class="bill-meta">Due ${esc(b.dueDate||"date not set")}</div></div><div class="bill-amount">${peso(b.amount)}</div><span class="status-cell"><span class="status ${b.paid?"paid":""}">${billTiming(b.dueDate,b.paid)}</span></span><div class="bill-actions">${isAdmin?(b.paid?'<span class="paid-label">Paid ✓</span>':`<button class="pay" data-paid="${esc(id)}">Mark paid</button>`)+`<button class="delete" data-delete-bill="${esc(id)}">Delete</button>`:""}</div></article>`).join("");
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -472,11 +537,11 @@
       expList.innerHTML = `<div class="exp-empty">${msg}</div>`;
       return;
     }
-    let rows = "", total = 0;
+    let rows = "", total = 0, rowIdx = 0;
     for(const [id, item] of entries){
       const t = Number(item.qty) * Number(item.price);
       total += t;
-      rows += `<tr>
+      rows += `<tr class="exp-row" style="--i:${rowIdx++}">
         <td>${esc(item.name)}</td>
         <td class="r">${Number(item.qty)}</td>
         <td class="r">${peso(item.price)}</td>
@@ -493,9 +558,9 @@
         </tr></thead>
         <tbody>
           ${rows}
-          <tr class="sub-row">
+          <tr class="sub-row exp-total-row">
             <td colspan="3" class="r">Day Total</td>
-            <td class="r">${peso(total)}</td>
+            <td class="r exp-total-value" data-total="${total}">${peso(total)}</td>
             <td></td>
           </tr>
         </tbody>
@@ -508,7 +573,7 @@
     if(expUnsubscribe) expUnsubscribe(); // detach previous listener
     expUnsubscribe = onValue(
       ref(database, `expenses/${date}`),
-      snap => { currentExpenses = snap.val() || {}; renderExpenses(); },
+      snap => { currentExpenses = snap.val() || {}; renderExpenses(); introLoaded.expenses=true; maybePlayIntro(); },
       err  => setNotice(`Expenses error: ${err.message}`, "error")
     );
   }
@@ -880,7 +945,7 @@
 
       /* Realtime data listeners */
       onValue(ref(database,"funds/amount"), snap=>{
-        const a=Number(snap.val()); fundsLeft=Number.isFinite(a)?a:0; renderFunds();
+        const a=Number(snap.val()); fundsLeft=Number.isFinite(a)?a:0; renderFunds(); introLoaded.funds=true; maybePlayIntro();
       }, e=>setNotice(`Funds error: ${e.message}`,"error"));
 
       onValue(ref(database,"supplies"), async snap=>{
@@ -899,7 +964,7 @@
       }, e=>setNotice(`Supplies error: ${e.message}`,"error"));
 
       onValue(ref(database,"bills"), snap=>{
-        bills=snap.val()||{}; renderBills(); showAlerts(bills);
+        bills=snap.val()||{}; renderBills(); showAlerts(bills); introLoaded.bills=true; maybePlayIntro();
       }, e=>setNotice(`Bills error: ${e.message}`,"error"));
 
       /* Start listening to today's expenses by default */
