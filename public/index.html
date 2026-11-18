@@ -680,7 +680,7 @@
     }
     rows += `<tr class="grand-row"><td colspan="3" class="r">Grand Total</td><td class="r">${peso(grandTotal)}</td></tr>`;
     return `<div class="exp-wrap">
-      <div style="padding:20px 18px 4px">
+      <div style="padding:14px 14px 8px">
         <div style="font-weight:900;font-size:18px;color:#403b52">📊 Expense Report</div>
         <div style="font-size:13px;color:#888397;font-weight:800;margin-top:4px">${fmtShort(from)} — ${fmtShort(to)}</div>
       </div>
@@ -932,14 +932,15 @@
     stage.innerHTML = `
       <style>
         *{box-sizing:border-box;font-family:Nunito,system-ui,sans-serif}
-        .exp-wrap{background:#fff;border-radius:20px;overflow:hidden}
-        .exp-table{width:100%;border-collapse:collapse;font-size:14px}
-        .exp-table th{background:#f7f4ff;color:#7161cf;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;padding:11px 14px;text-align:left}
-        .exp-table th.r,.exp-table td.r{text-align:right}
-        .exp-table td{padding:11px 14px;border-top:1px solid #f5f1f0;font-weight:700}
-        .exp-table .date-row td{background:#fffbf0;color:#888397;font-size:12px;font-weight:900;padding:8px 14px;border-top:2px solid #f0e9e3}
+        .exp-wrap{background:#fff;border-radius:12px;overflow:hidden}
+        .exp-table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.35}
+        .exp-table th{background:#f7f4ff;color:#7161cf;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;padding:7px 10px;text-align:left;border:1px solid #e4ddf2}
+        .exp-table th.r,.exp-table td.r{text-align:right;white-space:nowrap}
+        .exp-table td{padding:6px 10px;border:1px solid #e9e2e6;font-weight:700;color:#403b52}
+        .exp-table tbody tr:nth-child(even) td{background:#faf8fb}
+        .exp-table .date-row td{background:#fff8e8;color:#7a6a45;font-size:12px;font-weight:900;padding:6px 10px}
         .exp-table .sub-row td{background:#f7f4ff;color:#7161cf;font-weight:900}
-        .exp-table .grand-row td{background:linear-gradient(110deg,#e6f8e9,#e7f2ff);font-weight:900;font-size:15px;color:#438a5d;border-top:2px solid #c3e6cb}
+        .exp-table .grand-row td{background:#e6f4ea;font-weight:900;font-size:14px;color:#2f7a4b}
       </style>
       ${buildReportTable(reportData)}
     `;
